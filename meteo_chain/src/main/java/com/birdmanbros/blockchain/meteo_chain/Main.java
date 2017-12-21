@@ -12,11 +12,23 @@ public class Main {
 	public static void main(String[] args) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		
-		Block block = new Block(10L, "xyz", "2015-12-15T23:30:59.999", "iv got hungry.");	
+		Node node1 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node1");
+		Node node2 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node2");
+		
+		node1.addCounterparty(node2);
+		node2.addCounterparty(node1);
+		
+		try {
+			node1.writeTo(node2, new Message("QUERY_ALL", "alo"));
+		}catch(Exception x) {
+			x.printStackTrace();
+		}
+		
+//		Block block = new Block(10L, "xyz", "2015-12-15T23:30:59.999", "iv got hungry.");	
 		
 
-		System.out.format(">> %s%n", mapper.writeValueAsString(block));
-		System.out.format(">> %s%n", mapper.writeValueAsString(block.generateNextBlock("SW was exciting")));
+		System.out.format(">> %s%n", mapper.writeValueAsString(node1));
+		System.out.format(">> %s%n", mapper.writeValueAsString(node2));
 
 	}
 }

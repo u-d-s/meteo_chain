@@ -12,6 +12,8 @@ public class Block {
 
 	static private int slots = 101;
 	
+	
+	
 	public Block generateNextBlock(String data) {
 		return new Block(index + 1, hash, LocalDateTime.now().toString(), data);
 //		 Block(Long index, String previousHash, String timestamp, String data, String hash)
@@ -67,6 +69,12 @@ public class Block {
 		this.hash = hash;
 	}
 
+	public static int getSlots() {
+		return slots;
+	}
+	public static void setSlots(int slots) {
+		Block.slots = slots;
+	}
 
 	public Block(Long index, String previousHash, String timestamp, String data) {
 		super();

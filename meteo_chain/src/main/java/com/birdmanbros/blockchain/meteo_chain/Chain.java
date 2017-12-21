@@ -6,6 +6,16 @@ import java.util.List;
 public class Chain {
 	private List<Block> chain;
 	
+	
+	public List<Block> getChain() {
+		return chain;
+	}
+	public void setChain(List<Block> chain) {
+		this.chain = chain;
+	}
+
+	
+	
 	public Chain(Long index, String previousHash, String timestamp, String data) {
 		chain = new LinkedList<Block>();
 		chain.add(new Block(index, previousHash, timestamp, data));
