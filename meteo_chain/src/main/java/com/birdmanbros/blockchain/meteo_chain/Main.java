@@ -19,7 +19,7 @@ public class Main {
 		node2.addCounterparty(node1);
 		
 		try {
-			node1.writeTo(node2, new Message("QUERY_ALL", "alo"));
+			node1.writeTo(node2, new Message("QUERY_ALL", "alo!"));
 		}catch(Exception x) {
 			x.printStackTrace();
 		}
