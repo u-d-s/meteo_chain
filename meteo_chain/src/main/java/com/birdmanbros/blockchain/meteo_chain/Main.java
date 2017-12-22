@@ -9,26 +9,33 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 public class Main {
-	public static void main(String[] args) throws JsonProcessingException {
-		ObjectMapper mapper = new ObjectMapper();
+	public static void main(String[] args) {
+		System.out.format(">> main(String[]) in Main%n  args[0] %s%n", args[0]);
 		
-		Node node1 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node1");
-		Node node2 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node2");
+		Node node = new Node(args[0]);
+		node.startHttpServer(args[0]);
 		
-		node1.addCounterparty(node2);
-		node2.addCounterparty(node1);
-		
-		try {
-			node1.writeTo(node2, new Message("QUERY_ALL", "alo!"));
-		}catch(Exception x) {
-			x.printStackTrace();
-		}
-		
-//		Block block = new Block(10L, "xyz", "2015-12-15T23:30:59.999", "iv got hungry.");	
-		
-
-		System.out.format(">> %s%n", mapper.writeValueAsString(node1));
-		System.out.format(">> %s%n", mapper.writeValueAsString(node2));
+		System.out.format(">> node %s%n", node.toJson());
+////		ObjectMapper	 mapper = new ObjectMapper();
+//		System.out.format("args[0] %s%n", args[0]);
+//		
+//		Node node1 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node1");
+//		Node node2 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node2");
+//		
+//		node1.addCounterparty(node2);
+//		node2.addCounterparty(node1);
+//		
+//		try {
+//			node1.writeTo(node2, new Message("QUERY_ALL", "alo!"));
+//		}catch(Exception x) {
+//			x.printStackTrace();
+//		}
+//		
+////		Block block = new Block(10L, "xyz", "2015-12-15T23:30:59.999", "iv got hungry.");	
+//		
+//
+////		System.out.format(">> %s%n", mapper.writeValueAsString(node1));
+////		System.out.format(">> %s%n", mapper.writeValueAsString(node2));
 
 	}
 }
@@ -36,7 +43,7 @@ public class Main {
 
 //public class Main {
 //    // Base URI the Grizzly HTTP server will listen on
-//    public static final String BASE_URI = "http://localhost:8080/myapp/";
+//    public static final String BASE_URI = "http://localhost:8080/meteo_chain/";
 //
 //    /**
 //     * Starts Grizzly HTTP server exposing JAX-RS resources defined in this application.

@@ -1,24 +1,24 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
 import java.util.LinkedList;
-import java.util.List;
 
-public class Chain {
-	private List<Block> chain;
-	
-	
-	public List<Block> getChain() {
-		return chain;
-	}
-	public void setChain(List<Block> chain) {
-		this.chain = chain;
-	}
+public class Chain extends LinkedList<Block>{
+//	private List<Block> chain;
+//	
+//	
+//	public List<Block> getChain() {
+//		return chain;
+//	}
+//	public void setChain(List<Block> chain) {
+//		this.chain = chain;
+//	}
 
 	
 	
 	public Chain(Long index, String previousHash, String timestamp, String data) {
-		chain = new LinkedList<Block>();
-		chain.add(new Block(index, previousHash, timestamp, data));
+		super();
+//		chain = new LinkedList<Block>();
+		super.add(new Block(index, previousHash, timestamp, data));
 	}
 	
 	public Chain() {
