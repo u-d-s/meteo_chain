@@ -1,7 +1,11 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
+import java.net.URI;
+
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
+import org.glassfish.jersey.server.ResourceConfig;
 
 /**
  * Main class.
@@ -10,36 +14,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Main {
 	public static void main(String[] args) {
-		System.out.format(">> main(String[]) in Main%n  args[0] %s%n", args[0]);
+//		String uri = args[0];
+		String uri = "http://localhost:58080/meteo_chain/";
+		Node node = new Node(uri);
+		EndPoints.setNode(node);
+		node.startHttpServer();
 		
-		Node node = new Node(args[0]);
-		node.startHttpServer(args[0]);
-		
-		System.out.format(">> node %s%n", node.toJson());
-////		ObjectMapper	 mapper = new ObjectMapper();
-//		System.out.format("args[0] %s%n", args[0]);
-//		
-//		Node node1 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node1");
-//		Node node2 = new Node("http://www.birdmanbros.co.jp/meteo_chain/node2");
-//		
-//		node1.addCounterparty(node2);
-//		node2.addCounterparty(node1);
-//		
+//		final String BASE_URI = args[0];
+//		final String BASE_URI = "http://localhost:58080/meteo_chain/";
+//		final ResourceConfig rc = new ResourceConfig().packages("com.birdmanbros.blockchain.meteo_chain");
+//		final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+//		System.out.println(String.format(
+//				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
+//				BASE_URI));
 //		try {
-//			node1.writeTo(node2, new Message("QUERY_ALL", "alo!"));
-//		}catch(Exception x) {
-//			x.printStackTrace();
+//			System.in.read();
+//		} catch (IOException e) {
+//			e.printStackTrace();
 //		}
-//		
-////		Block block = new Block(10L, "xyz", "2015-12-15T23:30:59.999", "iv got hungry.");	
-//		
-//
-////		System.out.format(">> %s%n", mapper.writeValueAsString(node1));
-////		System.out.format(">> %s%n", mapper.writeValueAsString(node2));
+//		server.stop();
 
 	}
 }
-
 
 //public class Main {
 //    // Base URI the Grizzly HTTP server will listen on
