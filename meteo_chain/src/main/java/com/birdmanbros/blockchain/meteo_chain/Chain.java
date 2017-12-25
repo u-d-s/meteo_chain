@@ -12,6 +12,10 @@ public class Chain extends LinkedList<Block>{
 //	public void setChain(List<Block> chain) {
 //		this.chain = chain;
 //	}
+	
+	public void addNewBlock(String data) {
+		System.err.println("chain: addNewBlock");
+	}
 
 	
 	

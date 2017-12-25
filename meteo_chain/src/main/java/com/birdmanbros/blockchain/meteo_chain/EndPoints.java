@@ -62,14 +62,13 @@ public class EndPoints {
 		return node.getChain();
 	}
 	
-//	!!!!!!!! UNDER CONSTRUCTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//	@POST
-//	@Path("newBlock")
-//	@Produces(MediaType.TEXT_PLAIN)
-//	public String postNewBlock(@FormParam("data") String data) {
-//		node.addNewBlock(data);
-//		return "add: " + data;
-//	}
+	@POST
+	@Path("newBlock")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postNewBlock(@FormParam("data") String data) {
+		node.addNewBlock(data);
+		return "add: " + data;
+	}
 	
 
 }

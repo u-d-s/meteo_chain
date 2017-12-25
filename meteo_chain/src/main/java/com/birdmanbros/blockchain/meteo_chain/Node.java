@@ -29,10 +29,10 @@ public class Node {
 	
 	
 	
-//	!!!!!!!! UNDER CONSTRUCTION !!!!!!!!!!!!!!!!!!!!!!!!!!!!	
-//	public void addNewBlock(String data) {
-//		chain.addNewBlock(data);
-//	}
+
+	public void addNewBlock(String data) {
+		chain.addNewBlock(data);
+	}
 
 	public void addPeer(String c) {
 		if(!(c == null || c.isEmpty())) {

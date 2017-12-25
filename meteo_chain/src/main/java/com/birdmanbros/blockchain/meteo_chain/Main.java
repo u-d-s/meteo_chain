@@ -14,11 +14,26 @@ import org.glassfish.jersey.server.ResourceConfig;
 
 public class Main {
 	public static void main(String[] args) {
-//		String uri = args[0];
-		String uri = "http://localhost:58080/meteo_chain/";
-		Node node = new Node(uri);
-		EndPoints.setNode(node);
-		node.startHttpServer();
+
+		if(args==null || args.length == 0) {
+			System.out.println(">> missing URI of the node.");
+		}else {
+			String uri = args[0];
+			Node node = new Node(uri);
+			EndPoints.setNode(node);
+			
+			if(args.length > 1) {
+				for(int i=1; i<args.length;i++) {
+					node.addPeer(args[i]);
+				}
+			}
+			
+			node.startHttpServer();
+			
+		}
+
+//		String uri = "http://localhost:58080/meteo_chain";
+
 		
 //		final String BASE_URI = args[0];
 //		final String BASE_URI = "http://localhost:58080/meteo_chain/";
