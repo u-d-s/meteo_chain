@@ -118,7 +118,15 @@ public class Node {
 //		return peers;
 //	}
 	public String getPeers() {
-	return "peers: \"xxx\"";
+		StringBuilder sb = new StringBuilder();
+		sb.append("peers:[");
+		for(WebTarget wt: peers) {
+			sb.append(wt.getUri().toString());
+			sb.append(",");
+		}
+		sb.append("]");
+		
+	return sb.toString();
 }
 	public void setPeers(List<WebTarget> peers) {
 		this.peers = peers;
