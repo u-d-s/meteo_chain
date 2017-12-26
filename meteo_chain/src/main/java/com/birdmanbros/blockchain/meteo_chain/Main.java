@@ -16,10 +16,10 @@ public class Main {
 	public static void main(String[] args) {
 
 		if(args==null || args.length == 0) {
-			System.out.println(">> missing URI of the node.");
+			System.out.println(">> missing URL of the node.");
 		}else {
-			String uri = args[0];
-			Node node = new Node(uri);
+			String url = args[0];
+			Node node = new Node(url);
 			EndPoints.setNode(node);
 			
 			if(args.length > 1) {

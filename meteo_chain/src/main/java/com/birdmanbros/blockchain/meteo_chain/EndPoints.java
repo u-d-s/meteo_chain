@@ -1,10 +1,13 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
+import java.util.LinkedList;
+
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 
 @Path("node")
@@ -44,15 +47,19 @@ public class EndPoints {
 	@Path("peers")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getPeers() {
-		return  String.join(",", node.getPeers());
+//		LinkedList<String> uri_list = new LinkedList<>();
+//		for(WebTarget wt: node.getPeers()) {
+//			uri_list.add(wt.getUri().toString());
+//		}
+		return  node.getPeers();
 	}
 
 	@POST
 	@Path("peers")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postPeers(@FormParam("URI") String uri) {
-		node.addPeer(uri);
-		return "add: " + uri;
+	public String postPeers(@FormParam("URL") String url) {
+		node.addPeer(url);
+		return "add: " + url;
 	}
 
 	@GET

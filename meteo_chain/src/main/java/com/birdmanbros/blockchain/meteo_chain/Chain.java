@@ -14,15 +14,15 @@ public class Chain extends LinkedList<Block>{
 //	}
 	
 	public void addNewBlock(String data) {
-		System.err.println("chain: addNewBlock");
-		setLastBlock(getLastBlock().generateNextBlock(data));
+//		System.err.println("chain: addNewBlock");
+		setLatestBlock(getLatestBlock().generateNextBlock(data));
 	}
 	
-	public Block getLastBlock() {
+	public Block getLatestBlock() {
 		return getLast();
 	}
 	
-	public void setLastBlock(Block b) {
+	public void setLatestBlock(Block b) {
 		add(b);
 	}
 

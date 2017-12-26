@@ -5,27 +5,28 @@ import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 //@Path("node")
 public class Node {
 	private Chain chain;
-	private String uri;
-	// @JsonIgnore
-	private List<String> peers;
+	private String url;
+//	@JsonIgnore
+//	@JsonManagedReference
+//	@JsonBackReference
+	private List<WebTarget> peers;
 	private String memo;
+	private Client httpClient;
 	
 	
 	
@@ -36,7 +37,8 @@ public class Node {
 
 	public void addPeer(String c) {
 		if(!(c == null || c.isEmpty())) {
-			peers.add(c);
+			peers.add(httpClient.target(c).path("/meteochain/node"));
+//			System.err.format("DEBUG>> %s%n %s%n", target.getUri(), c);
 		}
 	}
 
@@ -45,7 +47,7 @@ public class Node {
 	}
 
 	public void handleMessage(Message message) throws MeteoException {
-		System.out.format(">> Node(%s) received message -- type:%s data:%s%n", uri, message.getType(),
+		System.out.format(">> Node(%s) received message -- type:%s data:%s%n", url, message.getType(),
 				message.getData());
 		if (message.getType().equals("QUERY_LATEST")) {
 			System.out.println(">> QUERY_LATEST");
@@ -60,7 +62,7 @@ public class Node {
 
 	public void startHttpServer() {
 		// final String BASE_URI = "http://localhost:58080/meteo_chain/";
-		final String BASE_URI = uri;
+		final String BASE_URI = url + "/meteochain";
 		final ResourceConfig rc = new ResourceConfig().packages("com.birdmanbros.blockchain.meteo_chain");
 		final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
 		System.out.println(String.format(
@@ -87,6 +89,10 @@ public class Node {
 
 		return result;
 	}
+	
+//	public sendP2PMessage(String uri, Message message) {
+//		;
+//	}
 
 //	@GET
 //	@Path("ping")
@@ -108,17 +114,20 @@ public class Node {
 	public void setChain(Chain chain) {
 		this.chain = chain;
 	}
-	public List<String> getPeers() {
-		return peers;
-	}
-	public void setPeers(List<String> peers) {
+//	public List<WebTarget> getPeers() {
+//		return peers;
+//	}
+	public String getPeers() {
+	return "peers: \"xxx\"";
+}
+	public void setPeers(List<WebTarget> peers) {
 		this.peers = peers;
 	}
-	public String getUri() {
-		return uri;
+	public String getUrl() {
+		return url;
 	}
-	public void setUri(String uri) {
-		this.uri = uri;
+	public void setUrl(String url) {
+		this.url = url;
 	}
 	public String getMemo() {
 		return memo;
@@ -129,12 +138,13 @@ public class Node {
 
 	public Node() {
 		chain = new Chain();
-		peers = new LinkedList<String>();
+		peers = new LinkedList<WebTarget>();
+		httpClient = ClientBuilder.newClient();
 		memo = "alo";
 	}
-	public Node(String uri) {
+	public Node(String url) {
 		this();
-		this.uri = uri;
+		this.url = url;
 	}
 
 }
