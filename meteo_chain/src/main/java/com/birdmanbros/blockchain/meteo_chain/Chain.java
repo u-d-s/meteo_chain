@@ -15,6 +15,15 @@ public class Chain extends LinkedList<Block>{
 	
 	public void addNewBlock(String data) {
 		System.err.println("chain: addNewBlock");
+		setLastBlock(getLastBlock().generateNextBlock(data));
+	}
+	
+	public Block getLastBlock() {
+		return getLast();
+	}
+	
+	public void setLastBlock(Block b) {
+		add(b);
 	}
 
 	
