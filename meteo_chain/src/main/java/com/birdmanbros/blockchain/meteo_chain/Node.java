@@ -7,13 +7,15 @@ import java.util.List;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
+import javax.ws.rs.core.MediaType;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -37,7 +39,7 @@ public class Node {
 
 	public void addPeer(String c) {
 		if(!(c == null || c.isEmpty())) {
-			peers.add(httpClient.target(c).path("/meteochain/node"));
+			peers.add(httpClient.target(c).path("/meteochain/node/p2pMessage"));
 //			System.err.format("DEBUG>> %s%n %s%n", target.getUri(), c);
 		}
 	}
@@ -90,9 +92,18 @@ public class Node {
 		return result;
 	}
 	
-//	public sendP2PMessage(String uri, Message message) {
-//		;
-//	}
+	
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	public void sendP2PMessage(WebTarget wt, Message message) {
+		Entity<Form> entity = Entity.entity(new Form().param("message", message.toJson()),
+			    MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+		wt.request().post(entity, String.class);
+	}
+	public void sendP2PMessage(String data) {
+		;
+	}
 
 //	@GET
 //	@Path("ping")
@@ -114,17 +125,15 @@ public class Node {
 	public void setChain(Chain chain) {
 		this.chain = chain;
 	}
-//	public List<WebTarget> getPeers() {
-//		return peers;
-//	}
 	public String getPeers() {
 		StringBuilder sb = new StringBuilder();
-		sb.append("peers:[");
+		sb.append("[");
 		for(WebTarget wt: peers) {
+			sb.append("\"");
 			sb.append(wt.getUri().toString());
-			sb.append(",");
+			sb.append("\",");
 		}
-		sb.append("]");
+		sb.setCharAt(sb.length()-1,']');
 		
 	return sb.toString();
 }
