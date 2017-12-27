@@ -78,12 +78,25 @@ public class EndPoints {
 	}
 	
 	@POST
-	@Path("p2pMessage")
+	@Path("broadcast")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postP2PMessage(@FormParam("data") String data) {
+	public String postBroadcast(@FormParam("data") String data) {
 		node.sendP2PMessage(data);
-		return "sendP2PMessage: "+data;
+		return "broadcast: "+data;
 	}
+	
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//	@POST
+//	@Path("p2pMessage")
+//	@Produces(MediaType.TEXT_PLAIN)
+//	public String postP2PMessage(@FormParam("message") String message) {
+//		node.sendP2PMessage(data);
+//		return "broadcast: "+data;
+//	}
+	
+	
 	
 
 }

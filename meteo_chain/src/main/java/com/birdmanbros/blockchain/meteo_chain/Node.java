@@ -102,21 +102,12 @@ public class Node {
 		wt.request().post(entity, String.class);
 	}
 	public void sendP2PMessage(String data) {
-		;
+		Message message = new Message("TEST", data);
+		for(WebTarget wt: peers) {
+			sendP2PMessage(wt,message);
+		}
 	}
-
-//	@GET
-//	@Path("ping")
-//	@Produces(MediaType.TEXT_PLAIN)
-//	public String ping() {
-//		return "pong";
-//	}
-//
-//	@GET
-//	@Produces(MediaType.APPLICATION_JSON)
-//	public Node node() {
-//		return this;
-//	}
+	
 	
 	
 	public Chain getChain() {
