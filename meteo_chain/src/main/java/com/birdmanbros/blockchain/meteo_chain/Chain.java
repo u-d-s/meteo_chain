@@ -2,16 +2,12 @@ package com.birdmanbros.blockchain.meteo_chain;
 
 import java.util.LinkedList;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class Chain extends LinkedList<Block>{
-//	private List<Block> chain;
-//	
-//	
-//	public List<Block> getChain() {
-//		return chain;
-//	}
-//	public void setChain(List<Block> chain) {
-//		this.chain = chain;
-//	}
+
 	
 	public void addNewBlock(String data) {
 //		System.err.println("chain: addNewBlock");
@@ -36,7 +32,7 @@ public class Chain extends LinkedList<Block>{
 	
 	public Chain() {
 		// genesis block
-		this(0L,"-1", "20171218", "alpha&omega");
+		this(0L,"-1", "20171218", "alphaandomega");
 		
 	}
 

@@ -1,24 +1,19 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
+import java.io.IOException;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Message {
 	private String type;
 	private String data;
-	private ObjectMapper mapper;
+
 	
-	public String toJson() {
-		String result;
-			try {
-				result = mapper.writeValueAsString(this);
-			} catch (JsonProcessingException e) {
-				e.printStackTrace();
-				result = e.toString();
-			}
-		return result;
+	public void addData(String data) {
+		this.data += data;
 	}
-	
 	
 	public String getType() {
 		return type;
@@ -33,13 +28,15 @@ public class Message {
 		this.data = data;
 	}
 	
-	public Message() {
-		mapper = new ObjectMapper();
-	}
 	
 	public Message(String type, String data) {
-		this();
 		this.type = type;
 		this.data = data;
 	}
+	
+	public Message() {
+		this.type = "";
+		this.data = "";
+	}
+	
 }

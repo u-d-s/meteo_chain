@@ -1,5 +1,6 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
+import java.io.IOException;
 import java.util.LinkedList;
 
 import javax.ws.rs.FormParam;
@@ -77,24 +78,28 @@ public class EndPoints {
 		return "add: " + data;
 	}
 	
-	@POST
-	@Path("broadcast")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String postBroadcast(@FormParam("data") String data) {
-		node.sendP2PMessage(data);
-		return "broadcast: "+data;
-	}
-	
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //	@POST
-//	@Path("p2pMessage")
+//	@Path("broadcast")
 //	@Produces(MediaType.TEXT_PLAIN)
-//	public String postP2PMessage(@FormParam("message") String message) {
-//		node.sendP2PMessage(data);
-//		return "broadcast: "+data;
+//	public String postBroadcast(@FormParam("type") String type, @FormParam("data") String data) {
+//		node.broadcast(type,data)
+//;		return "broadcast: "+data;
 //	}
+	
+
+	@POST
+	@Path("p2pMessage")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Message postP2PMessage(@FormParam("message") String message) {
+		Message res = null;
+		try {
+			res = node.handleMessage(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+			res = new Message("IOEXCEPION", e.toString());
+		}
+		return res;
+	}
 	
 	
 	

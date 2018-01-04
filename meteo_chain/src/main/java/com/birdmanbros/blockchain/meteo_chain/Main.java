@@ -2,10 +2,15 @@ package com.birdmanbros.blockchain.meteo_chain;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.Arrays;
+import java.util.LinkedList;
 
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Main class.
@@ -13,24 +18,64 @@ import org.glassfish.jersey.server.ResourceConfig;
  */
 
 public class Main {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JsonProcessingException {
 
-		if(args==null || args.length == 0) {
+		if (args == null || args.length == 0) {
 			System.out.println(">> missing URL of the node.");
-		}else {
+		} else {
 			String url = args[0];
 			Node node = new Node(url);
 			EndPoints.setNode(node);
-			
-			if(args.length > 1) {
-				for(int i=1; i<args.length;i++) {
+
+			if (args.length > 1) {
+				for (int i = 1; i < args.length; i++) {
 					node.addPeer(args[i]);
 				}
 			}
 			
-			node.startHttpServer();
+			runHttpServer(url);
 			
+			
+			
+			
+//			ObjectMapper mapper = new ObjectMapper();
+//			
+//			Message req = null;
+//			String message_str = "{\"type\":\"TEST\", \"data\":\"transaction\"}";
+//			Block b = new Chain().getLatestBlock();
+//			String str = null;
+//			System.out.format("str>> %s%n", message_str);
+//			
+//			try {
+//				req = mapper.readValue(message_str, Message.class);
+//				str = mapper.writeValueAsString(b);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
+//			
+//			System.out.format("main>> %s%n", str);
+
 		}
+	}
+	
+	private static void runHttpServer(String url) {
+		// final String BASE_URI = "http://localhost:58080/meteo_chain/";
+		final String BASE_URI = url + "/meteochain";
+		final ResourceConfig rc = new ResourceConfig().packages("com.birdmanbros.blockchain.meteo_chain");
+		final HttpServer server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+		System.out.println(String.format(
+				"Jersey app started with WADL available at " + "%sapplication.wadl\nHit enter to stop it...",
+				BASE_URI));
+		try {
+			System.in.read();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		server.stop();
+		
+	}
+}
+
 
 //		String uri = "http://localhost:58080/meteo_chain";
 
@@ -49,8 +94,7 @@ public class Main {
 //		}
 //		server.stop();
 
-	}
-}
+
 
 //public class Main {
 //    // Base URI the Grizzly HTTP server will listen on

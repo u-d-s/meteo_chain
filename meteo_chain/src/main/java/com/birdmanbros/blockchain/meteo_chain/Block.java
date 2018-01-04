@@ -1,7 +1,13 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Block {
 	private Long index;
@@ -9,10 +15,19 @@ public class Block {
 	private String timestamp;
 	private String data;
 	private String hash;
+//	@JsonIgnore
+//	private ObjectMapper mapper;
 
 	static private int slots = 101;
 	
 	
+	public Boolean isNotLongerThan(Chain chain) {
+		return index <= chain.getLatestBlock().getIndex() ? true : false;
+	}
+	
+	public Boolean canBeAppndedTo(Chain chain) {
+		return false;
+	}
 	
 	public Block generateNextBlock(String data) {
 		return new Block(index + 1, hash, LocalDateTime.now().toString(), data);
@@ -76,14 +91,34 @@ public class Block {
 		Block.slots = slots;
 	}
 
-	public Block(Long index, String previousHash, String timestamp, String data) {
+	public Block() {
 		super();
+//		mapper = new ObjectMapper();
+	}
+	public Block(Long index, String previousHash, String timestamp, String data) {
+		this();
 		this.index = index;
 		this.previousHash = previousHash;
 		this.timestamp = timestamp;
 		this.data = data;
 		this.hash = calculateHash();
 	}
+
+//	public Block(String jsonStr) {
+//		super();
+//		try {
+//			Block tmp = mapper.readValue(jsonStr, Block.class);
+//
+//			this.index = tmp.getIndex();
+//			this.previousHash = tmp.getPreviousHash();
+//			this.timestamp = tmp.getTimestamp();
+//			this.data = tmp.getData();
+//			this.hash = tmp.getHash();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
 	
 	private String calculateHash(Long index, String previousHash, String timestamp, String data) {
 		Long moduloOperand = index + sumAsNumber(previousHash)+sumAsNumber(timestamp)+sumAsNumber(data);
