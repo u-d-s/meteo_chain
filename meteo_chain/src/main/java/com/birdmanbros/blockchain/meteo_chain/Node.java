@@ -96,12 +96,11 @@ public class Node {
 //	}
 	
 	
-//	public void broadcast(String type, String data) {
-//		Message message = new Message(type, data);
+	public void broadcast(Block block) {
 //		for(WebTarget wt: peers) {
 //			sendP2PMessage(wt,message);
 //		}
-//	}
+	}
 		
 //	public void sendP2PMessage(WebTarget wt, Message message) {
 //		Entity<Form> entity = Entity.entity(new Form().param("message", message.toJson()),
@@ -150,7 +149,8 @@ public class Node {
 			res.addData("\n-- received blockchain is not longer than current blockchain. Did nothing. --");
 		}else if(receivedBlock.canBeAppndedTo(chain)) {
 			res.addData("\n-- we can append the received block to our chain. --");
-			chain.addNewBlock(receivedBlock);	
+			chain.addNewBlock(receivedBlock);
+			broadcast(receivedBlock);
 		}else {
 			res.addData("\n-- received blockchain is longer than current blockchain.(it can't be appended) --");
 		}
