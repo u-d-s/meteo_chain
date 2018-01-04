@@ -1,0 +1,12 @@
+
+{"type":"SEND_LATEST","data":"{\"index\":0,\"previousHash\":\"-1\",\"timestamp\":\"20171218\",\"data\":\"alphaandomega\",\"hash\":\"62\"}"}
+
+
+
+
+
+{"index":0,"previousHash":"-1","timestamp":"20171218","data":"alphaandomega","hash":"28"},
+{"index":1,"previousHash":"28","timestamp":"2018-01-04T12:45:37.946","data":"happy new year","hash":"63"}
+
+
+{"type":"SEND_LATEST","data":"{\"index\":1,\"previousHash\":\"28\",\"timestamp\":\"2018-01-04T12:45:37.946\",\"data\":\"happy new year\",\"hash\":\"63\"}"}

@@ -9,18 +9,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class Chain extends LinkedList<Block>{
 
 	
-	public void addNewBlock(String data) {
+	public Chain addNewBlock(String data) {
 //		System.err.println("chain: addNewBlock");
-		setLatestBlock(getLatestBlock().generateNextBlock(data));
+		addNewBlock(getLatestBlock().generateNextBlock(data));
+		return this;
 	}
+	
+	public void addNewBlock(Block b) {
+		add(b);
+	}
+
 	
 	public Block getLatestBlock() {
 		return getLast();
 	}
 	
-	public void setLatestBlock(Block b) {
-		add(b);
-	}
 
 	
 	

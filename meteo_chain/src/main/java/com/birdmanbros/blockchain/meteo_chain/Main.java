@@ -40,15 +40,17 @@ public class Main {
 			
 //			ObjectMapper mapper = new ObjectMapper();
 //			
-//			Message req = null;
-//			String message_str = "{\"type\":\"TEST\", \"data\":\"transaction\"}";
-//			Block b = new Chain().getLatestBlock();
+////			Message req = null;
+////			String message_str = "{\"type\":\"TEST\", \"data\":\"transaction\"}";
+//			Chain c = new Chain().addNewBlock("happy new year");
 //			String str = null;
-//			System.out.format("str>> %s%n", message_str);
+////			System.out.format("str>> %s%n", message_str);
+//			
+//			
 //			
 //			try {
-//				req = mapper.readValue(message_str, Message.class);
-//				str = mapper.writeValueAsString(b);
+////				req = mapper.readValue(message_str, Message.class);
+//				str = mapper.writeValueAsString(c);
 //			} catch (IOException e) {
 //				e.printStackTrace();
 //			}

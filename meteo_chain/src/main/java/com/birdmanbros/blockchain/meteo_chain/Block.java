@@ -26,7 +26,8 @@ public class Block {
 	}
 	
 	public Boolean canBeAppndedTo(Chain chain) {
-		return false;
+		return (index == 1 + chain.getLatestBlock().getIndex()) && (previousHash.equals(chain.getLatestBlock().getHash())) ?
+				true : false ;
 	}
 	
 	public Block generateNextBlock(String data) {

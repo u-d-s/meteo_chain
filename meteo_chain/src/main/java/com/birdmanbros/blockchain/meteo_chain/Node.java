@@ -144,15 +144,15 @@ public class Node {
 	
 	private Message receivedLatestBlock(Message message) throws IOException {
 		Message res = new Message("RES_RECEIVED_LATEST", "received "+ mapper.writeValueAsString(message));
-		System.err.format("DEBUG %s %s5n", message.getType(), message.getData());
 		Block receivedBlock = mapper.readValue(message.getData(), Block.class);
 		
 		if(receivedBlock.isNotLongerThan(chain)) {
 			res.addData("\n-- received blockchain is not longer than current blockchain. Did nothing. --");
 		}else if(receivedBlock.canBeAppndedTo(chain)) {
 			res.addData("\n-- we can append the received block to our chain. --");
+			chain.addNewBlock(receivedBlock);	
 		}else {
-			res.addData("\n-- received blockchain is longer than current blockchain. --");
+			res.addData("\n-- received blockchain is longer than current blockchain.(it can't be appended) --");
 		}
 		
 		return res;
