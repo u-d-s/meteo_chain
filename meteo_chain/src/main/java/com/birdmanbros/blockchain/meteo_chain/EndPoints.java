@@ -93,12 +93,25 @@ public class EndPoints {
 	public Message postP2PMessage(@FormParam("message") String message) {
 		Message res = null;
 		try {
-			res = node.handleMessage(message);
+			res = node.handleRequest(message);
 		} catch (IOException e) {
 			e.printStackTrace();
 			res = new Message("IOEXCEPION", e.toString());
 		}
 		return res;
+	}
+	
+	@POST
+	@Path("responseMessage")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postresponseMessage(@FormParam("message") String message) {
+		try {
+			node.handleResponse(message);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return "received " + message;
 	}
 	
 	

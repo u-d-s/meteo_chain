@@ -96,11 +96,41 @@ public class Node {
 //	}
 	
 	
-	public void broadcast(Block block) {
-//		for(WebTarget wt: peers) {
-//			sendP2PMessage(wt,message);
-//		}
+//	public void broadcast(Block block) {
+////		for(WebTarget wt: peers) {
+////			sendP2PMessage(wt,message);
+////		}
+//	}
+	
+	public void broadcast(Message message) throws IOException {
+		for(WebTarget wt: peers) {
+			handleResponse(sendRequest(wt, message));
+		};
 	}
+	
+	private String sendRequest(WebTarget wt, Message message) {
+		return "nop";
+	}
+	
+	public void handleResponse(String message_str) throws JsonParseException, IOException {
+		Message res = mapper.readValue(message_str, Message.class);
+		
+		switch(res.getType()) {
+		case "RES_ALL":
+			System.err.println(">> handleResponse RES_ALL: "+message_str);
+			replaceChain(res.getData());
+			break;
+		
+		default:
+			System.err.println(">> I don't know Message.type in handleResponse. "+message_str);
+			break;
+		}
+	}
+	
+	private String replaceChain(String receivedChain_str) {
+		return "nop";
+	}
+	
 		
 //	public void sendP2PMessage(WebTarget wt, Message message) {
 //		Entity<Form> entity = Entity.entity(new Form().param("message", message.toJson()),
@@ -109,7 +139,7 @@ public class Node {
 //	}
 
 	
-	public Message handleMessage(String message_str) throws JsonParseException, IOException{
+	public Message handleRequest(String message_str) throws JsonParseException, IOException{
 		Message req = mapper.readValue(message_str, Message.class);
 				
 		switch(req.getType()) {
@@ -150,13 +180,16 @@ public class Node {
 		}else if(receivedBlock.canBeAppndedTo(chain)) {
 			res.addData("\n-- we can append the received block to our chain. --");
 			chain.addNewBlock(receivedBlock);
-			broadcast(receivedBlock);
-		}else {
-			res.addData("\n-- received blockchain is longer than current blockchain.(it can't be appended) --");
+			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
+		}else {		
+			res.addData("\n-- received blockchain is longer than current blockchain. but it can't be appended right now. i will broadcast quary for whole chain. --");
+			broadcast(new Message("REQ_ALL","REQ_ALL to replaceChain"));
 		}
 		
 		return res;
 	}
+	
+
 
 	
 //	private void sendAll() {
