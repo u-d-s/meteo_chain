@@ -102,14 +102,36 @@ public class Node {
 ////		}
 //	}
 	
-	public void broadcast(Message message) throws IOException {
+	public void broadcast(Message message) {
+		try {
+			System.err.format(">>>broadcast %s%n", mapper.writeValueAsString(message));
+		} catch (JsonProcessingException e1) {
+			// TODO 自動生成された catch ブロック
+			e1.printStackTrace();
+		}
+		
+		try {
 		for(WebTarget wt: peers) {
-			handleResponse(sendRequest(wt, message));
+			sendRequest(wt, message);
 		};
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	private String sendRequest(WebTarget wt, Message message) {
-		return "nop";
+	private void sendRequest(WebTarget wt, Message message) throws IOException {
+		try {
+			System.err.format(">>>sendRequest %s%n", mapper.writeValueAsString(message));
+		} catch (JsonProcessingException e1) {
+			// TODO 自動生成された catch ブロック
+			e1.printStackTrace();
+		}
+		
+		Entity<Form> entity = Entity.entity(
+				new Form().param("message", mapper.writeValueAsString(message)),
+						MediaType.APPLICATION_FORM_URLENCODED_TYPE);
+		String res = wt.request().post(entity, String.class);
+		handleResponse(res);
 	}
 	
 	public void handleResponse(String message_str) throws JsonParseException, IOException {
@@ -127,8 +149,18 @@ public class Node {
 		}
 	}
 	
-	private String replaceChain(String receivedChain_str) {
-		return "nop";
+	private void replaceChain(String receivedChain_str) throws IOException {
+		Chain receivedChain = mapper.readValue(receivedChain_str,Chain.class);
+		
+		if(receivedChain.isNotLongerThan(chain)) {
+			System.out.format("the received blockchain is not longer than the current block chain.%n");
+		}else if(receivedChain.isInvalidChain()) {
+			System.out.format("the received blockchain is invalid.%n");
+		}else {
+			System.out.format("the received blockchain is valid. Replacing the current blockchain with the received blockchain.%n");
+			chain = receivedChain;
+			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
+		}
 	}
 	
 		

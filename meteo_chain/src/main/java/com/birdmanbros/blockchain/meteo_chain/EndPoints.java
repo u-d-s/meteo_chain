@@ -1,28 +1,29 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
 import java.io.IOException;
-import java.util.LinkedList;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Path("node")
 public class EndPoints {
 	static Node node;
+	// static ObjectMapper mapper = new ObjectMapper();
 
 	public static Node getNode() {
 		return node;
 	}
+
 	public static void setNode(Node node) {
 		EndPoints.node = node;
 	}
-	
-	
+
 	@GET
 	@Path("ping")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -35,24 +36,24 @@ public class EndPoints {
 	public Node root() {
 		return node;
 	}
-	
+
 	@POST
 	@Path("memo")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String postMemo(@FormParam("memo") String memo) {
 		node.setMemo(memo);
-		return "post: "+memo;
+		return "post: " + memo;
 	}
-	
+
 	@GET
 	@Path("peers")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String getPeers() {
-//		LinkedList<String> uri_list = new LinkedList<>();
-//		for(WebTarget wt: node.getPeers()) {
-//			uri_list.add(wt.getUri().toString());
-//		}
-		return  node.getPeers();
+		// LinkedList<String> uri_list = new LinkedList<>();
+		// for(WebTarget wt: node.getPeers()) {
+		// uri_list.add(wt.getUri().toString());
+		// }
+		return node.getPeers();
 	}
 
 	@POST
@@ -69,7 +70,7 @@ public class EndPoints {
 	public Chain getChain() {
 		return node.getChain();
 	}
-	
+
 	@POST
 	@Path("newBlock")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -77,15 +78,17 @@ public class EndPoints {
 		node.addNewBlock(data);
 		return "add: " + data;
 	}
-	
-//	@POST
-//	@Path("broadcast")
-//	@Produces(MediaType.TEXT_PLAIN)
-//	public String postBroadcast(@FormParam("type") String type, @FormParam("data") String data) {
-//		node.broadcast(type,data)
-//;		return "broadcast: "+data;
-//	}
-	
+
+	@POST
+	@Path("broadcast")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postBroadcast(@FormParam("type") String type, @FormParam("data") String data) {
+		Message message = new Message();
+		message.setType(type);
+		message.setData(data);
+		node.broadcast(message);
+		return "broadcast: " + " " + type + " " + data;
+	}
 
 	@POST
 	@Path("p2pMessage")
@@ -100,7 +103,7 @@ public class EndPoints {
 		}
 		return res;
 	}
-	
+
 	@POST
 	@Path("responseMessage")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -110,11 +113,8 @@ public class EndPoints {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		return "received " + message;
 	}
-	
-	
-	
 
 }
