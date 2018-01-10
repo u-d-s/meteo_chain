@@ -104,6 +104,15 @@ public class Block {
 		this.data = data;
 		this.hash = calculateHash();
 	}
+	public Block(Long index, String previousHash, String timestamp, String data, String hash) {
+		this();
+		this.index = index;
+		this.previousHash = previousHash;
+		this.timestamp = timestamp;
+		this.data = data;
+		this.hash = hash;
+	}
+
 
 //	public Block(String jsonStr) {
 //		super();

@@ -116,5 +116,14 @@ public class EndPoints {
 
 		return "received " + message;
 	}
+	
+	@POST
+	@Path("blockToBeMined")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postBlockToBeMined(@FormParam("data") String data) {
+		node.addNewBlock(data);	
+		return "blockToBeMined " + data;
+	}
+
 
 }

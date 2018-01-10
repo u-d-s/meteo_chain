@@ -150,7 +150,16 @@ public class Node {
 	}
 	
 	private void replaceChain(String receivedChain_str) throws IOException {
+		System.err.format("SSSS %s%n",receivedChain_str);
 		Chain receivedChain = mapper.readValue(receivedChain_str,Chain.class);
+		
+		Object[] bs = receivedChain.toArray();
+		
+		System.err.format("DDDD %d %s ---- %s%n", 
+				receivedChain.size(), 
+				mapper.writeValueAsString(receivedChain.get(0)), 
+				mapper.writeValueAsString(receivedChain.get(1)));
+//		System.err.format("DDDD %s --- %s%n", bs[0], bs[1]); 
 		
 		if(receivedChain.isNotLongerThan(chain)) {
 			System.out.format("the received blockchain is not longer than the current block chain.%n");

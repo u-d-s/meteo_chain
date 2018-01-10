@@ -33,29 +33,40 @@ public class Main {
 				}
 			}
 			
-			runHttpServer(url);
+//			runHttpServer(url);
 			
 			
 			
 			
-//			ObjectMapper mapper = new ObjectMapper();
+			ObjectMapper mapper = new ObjectMapper();
 //			
 ////			Message req = null;
 ////			String message_str = "{\"type\":\"TEST\", \"data\":\"transaction\"}";
 //			Chain c = new Chain().addNewBlock("happy new year");
-//			String str = null;
+			Chain c;
+			String str = null;
 ////			System.out.format("str>> %s%n", message_str);
 //			
 //			
 //			
-//			try {
-////				req = mapper.readValue(message_str, Message.class);
-//				str = mapper.writeValueAsString(c);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			String message_str = "[" +
+					  "{" +
+					    "\"index\": 0," +
+					    "\"previousHash\": \"-1\"," +
+					    "\"timestamp\": \"20171218\"," +
+					    "\"data\": \"ok?\"," +
+					    "\"hash\": \"28\"" +
+					  "}" +
+					  "]";
+			
+			try {
+				c = mapper.readValue(message_str, Chain.class);
+				str = mapper.writeValueAsString(c);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 //			
-//			System.out.format("main>> %s%n", str);
+			System.out.format("main>> %s%n", str);
 
 		}
 	}
