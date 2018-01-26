@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 
 public class Main {
-	public static void main(String[] args) throws JsonProcessingException {
+	public static void main(String[] args) throws IOException {
 
 		if (args == null || args.length == 0) {
 			System.out.println(">> missing URL of the node.");
@@ -33,40 +33,40 @@ public class Main {
 				}
 			}
 			
-//			runHttpServer(url);
+			runHttpServer(url);
 			
 			
 			
 			
-			ObjectMapper mapper = new ObjectMapper();
+//			ObjectMapper mapper = new ObjectMapper();
 //			
 ////			Message req = null;
 ////			String message_str = "{\"type\":\"TEST\", \"data\":\"transaction\"}";
 //			Chain c = new Chain().addNewBlock("happy new year");
-			Chain c;
-			String str = null;
+//			Chain c;
+//			String str = null;
 ////			System.out.format("str>> %s%n", message_str);
 //			
 //			
 //			
-			String message_str = "[" +
-					  "{" +
-					    "\"index\": 0," +
-					    "\"previousHash\": \"-1\"," +
-					    "\"timestamp\": \"20171218\"," +
-					    "\"data\": \"ok?\"," +
-					    "\"hash\": \"28\"" +
-					  "}" +
-					  "]";
-			
-			try {
-				c = mapper.readValue(message_str, Chain.class);
-				str = mapper.writeValueAsString(c);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-//			
-			System.out.format("main>> %s%n", str);
+//				String message_str = "[" +
+//						  "{" +
+//						    "\"index\": 0," +
+//						    "\"previousHash\": \"-1\"," +
+//						    "\"timestamp\": \"20171218\"," +
+//						    "\"data\": \"ok?\"," +
+//						    "\"hash\": \"28\"" +
+//						  "}" +
+//						  "]";
+//				
+//				try {
+//					c = mapper.readValue(message_str, Chain.class);
+//					str = mapper.writeValueAsString(c);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//	//			
+//				System.out.format("main>> %s%n", str);
 
 		}
 	}

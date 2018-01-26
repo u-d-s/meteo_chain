@@ -56,6 +56,13 @@ mvn exec:java "-Dexec.args=http://localhost:58080"
     \"timestamp\": \"20171218\",
     \"data\": \"alphaandomega\",
     \"hash\": \"28\"
+  } ,
+  {
+    \"index\": 1,
+    \"previousHash\": \"28\",
+    \"timestamp\": \"2018-01-10T12:49:28.746\",
+    \"data\": \"1st block\",
+    \"hash\": \"29\"
   }
   ]   "
 }

@@ -1,9 +1,10 @@
 package com.birdmanbros.blockchain.meteo_chain;
 
 import java.io.IOException;
-import java.net.URI;
-import java.util.LinkedList;
-import java.util.List;
+import java.math.BigInteger;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -12,39 +13,44 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 
-import org.glassfish.grizzly.http.server.HttpServer;
-import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 
 //@Path("node")
 public class Node {
+	static private Block genesisBlock = new Block(0L,"-1", "20171218", "alphaandomega", 1); // genesis block
+	static private int difficulty = 1;
 	private Chain chain;
 	private String url;
 //	@JsonIgnore
 //	@JsonManagedReference
 //	@JsonBackReference
-	private List<WebTarget> peers;
+	private Set<WebTarget> peers;
 	private String memo;
 	private Client httpClient;
 	@JsonIgnore
 	private ObjectMapper mapper;
 	
 	
-
-	public void addNewBlock(String data) {
-		chain.addNewBlock(data);
+	public void broadcastLatestBlock() throws IOException {
+		broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
+	}
+	
+	public void initializeChain() {
+		chain = new Chain(genesisBlock);
 	}
 
-	public void addPeer(String c) {
+	public void addNewBlock(String data) {
+		chain.addNewBlock(data,difficulty);
+	}
+
+	public void addPeer(String c) throws IOException {
+		WebTarget wt = httpClient.target(c).path("/meteochain/node/p2pMessage");
 		if(!(c == null || c.isEmpty())) {
-			peers.add(httpClient.target(c).path("/meteochain/node/p2pMessage"));
+			peers.add(wt);
+			sendRequest(wt, new Message("REQ_HANDSHAKE", url));
 //			System.err.format("DEBUG>> %s%n %s%n", target.getUri(), c);
 		}
 	}
@@ -106,24 +112,22 @@ public class Node {
 		try {
 			System.err.format(">>>broadcast %s%n", mapper.writeValueAsString(message));
 		} catch (JsonProcessingException e1) {
-			// TODO 自動生成された catch ブロック
 			e1.printStackTrace();
 		}
-		
+
 		try {
-		for(WebTarget wt: peers) {
-			sendRequest(wt, message);
-		};
-		}catch(IOException e) {
+			for (WebTarget wt : peers) {
+				sendRequest(wt, message);
+			}
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	private void sendRequest(WebTarget wt, Message message) throws IOException {
+	private Message sendRequest(WebTarget wt, Message message) throws IOException {
 		try {
 			System.err.format(">>>sendRequest %s%n", mapper.writeValueAsString(message));
 		} catch (JsonProcessingException e1) {
-			// TODO 自動生成された catch ブロック
 			e1.printStackTrace();
 		}
 		
@@ -131,44 +135,32 @@ public class Node {
 				new Form().param("message", mapper.writeValueAsString(message)),
 						MediaType.APPLICATION_FORM_URLENCODED_TYPE);
 		String res = wt.request().post(entity, String.class);
+		
 		handleResponse(res);
-	}
-	
-	public void handleResponse(String message_str) throws JsonParseException, IOException {
-		Message res = mapper.readValue(message_str, Message.class);
-		
-		switch(res.getType()) {
-		case "RES_ALL":
-			System.err.println(">> handleResponse RES_ALL: "+message_str);
-			replaceChain(res.getData());
-			break;
-		
-		default:
-			System.err.println(">> I don't know Message.type in handleResponse. "+message_str);
-			break;
-		}
+		return mapper.readValue(res, Message.class);
 	}
 	
 	private void replaceChain(String receivedChain_str) throws IOException {
 		System.err.format("SSSS %s%n",receivedChain_str);
 		Chain receivedChain = mapper.readValue(receivedChain_str,Chain.class);
 		
-		Object[] bs = receivedChain.toArray();
-		
-		System.err.format("DDDD %d %s ---- %s%n", 
-				receivedChain.size(), 
-				mapper.writeValueAsString(receivedChain.get(0)), 
-				mapper.writeValueAsString(receivedChain.get(1)));
+//		Object[] bs = receivedChain.toArray();
+//		
+//		System.err.format("DDDD %d %s ---- %s%n", 
+//				receivedChain.size(), 
+//				mapper.writeValueAsString(receivedChain.get(0)), 
+//				mapper.writeValueAsString(receivedChain.get(1)));
 //		System.err.format("DDDD %s --- %s%n", bs[0], bs[1]); 
 		
-		if(receivedChain.isNotLongerThan(chain)) {
-			System.out.format("the received blockchain is not longer than the current block chain.%n");
-		}else if(receivedChain.isInvalidChain()) {
+		if(receivedChain.size() <= chain.size()) {
+			System.out.format("the received blockchain is not longer than the current blockchain.%n");
+		}else if(isInvalidChain(receivedChain)) {
 			System.out.format("the received blockchain is invalid.%n");
 		}else {
 			System.out.format("the received blockchain is valid. Replacing the current blockchain with the received blockchain.%n");
 			chain = receivedChain;
-			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
+			broadcastLatestBlock();
+//			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
 		}
 	}
 	
@@ -180,29 +172,60 @@ public class Node {
 //	}
 
 	
+	public void handleResponse(String message_str) throws JsonParseException, IOException {
+		Message res = mapper.readValue(message_str, Message.class);
+		
+		switch(res.getType()) {
+		case "RES_ALL":
+			System.err.println(">> handleResponse RES_ALL: "+message_str);
+			replaceChain(res.getData());
+			break;
+		case "RES_SEND_LATEST":
+			System.err.println(">> handleResponse RES_SEND_LATEST: "+message_str);
+			break;
+		case "RES_HANDSHAKE":
+			System.err.println(">> handleResponse RES_HANDSHAKE: "+message_str);
+			Message m = receivedLatestBlock(res);
+			System.err.println(">> receivedLatestBlock right after handshake: "+mapper.writeValueAsString(m));
+			break;
+		default:
+			System.err.println(">> I don't know Message.type in handleResponse. "+message_str);
+			break;
+		}
+	}
+
 	public Message handleRequest(String message_str) throws JsonParseException, IOException{
 		Message req = mapper.readValue(message_str, Message.class);
 				
 		switch(req.getType()) {
 		case "TEST":
-			System.err.println(">> handleMessage TEST: "+message_str);
+			System.err.println(">> handleRequest TEST: "+message_str);
 			return new Message("TEST", "received "+message_str);
 			
 		case "REQ_ALL":
-			System.err.println(">> handleMessage REQ_ALL: "+message_str);
+			System.err.println(">> handleRequest REQ_ALL: "+message_str);
 			return resAll();
 		case "REQ_LATEST":
-			System.err.println(">> handleMessage REQ_LATEST: "+message_str);
+			System.err.println(">> handleRequest REQ_LATEST: "+message_str);
 			return resLatest();
 		case "SEND_LATEST":
-			System.err.println(">> handleMessage SEND_LATEST: "+message_str);
+			System.err.println(">> handleRequest SEND_LATEST: "+message_str);
 			return receivedLatestBlock(req);
+		case "REQ_HANDSHAKE":
+			return resHandshake(req);
 		default:
 			System.err.println(">> I don't know Message.type. "+message_str);
 			return new Message("DEFAULT", "received "+message_str);
 		}
 	}
 	
+	private Message resHandshake(Message req) throws IOException {
+		if(!(req.getData() == null || req.getData().isEmpty())) {
+			peers.add(httpClient.target(req.getData()).path("/meteochain/node/p2pMessage"));
+		}
+		
+		return new Message("RES_HANDSHAKE", mapper.writeValueAsString(chain.getLatestBlock()));
+	}
 	
 	private Message resAll() throws JsonProcessingException {
 		return new Message("RES_ALL",mapper.writeValueAsString(chain));
@@ -213,16 +236,20 @@ public class Node {
 	}
 	
 	private Message receivedLatestBlock(Message message) throws IOException {
-		Message res = new Message("RES_RECEIVED_LATEST", "received "+ mapper.writeValueAsString(message));
+		Message res = new Message("RES_SEND_LATEST", "received "+ mapper.writeValueAsString(message));
 		Block receivedBlock = mapper.readValue(message.getData(), Block.class);
 		
 		if(receivedBlock.isNotLongerThan(chain)) {
+			System.err.format("-- received blockchain is not longer than current blockchain. Did nothing. --\n");
 			res.addData("\n-- received blockchain is not longer than current blockchain. Did nothing. --");
-		}else if(receivedBlock.canBeAppndedTo(chain)) {
+		}else if(receivedBlock.canBeAppendedTo(chain)) {
+			System.err.format("-- we can append the received block to our chain. --\n");
 			res.addData("\n-- we can append the received block to our chain. --");
 			chain.addNewBlock(receivedBlock);
-			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
-		}else {		
+			broadcastLatestBlock();
+//			broadcast(new Message("SEND_LATEST", mapper.writeValueAsString(chain.getLatestBlock())));
+		}else {
+			System.err.format("-- received blockchain is longer than current blockchain. but it can't be appended right now. i will broadcast quary for whole chain. --\n");
 			res.addData("\n-- received blockchain is longer than current blockchain. but it can't be appended right now. i will broadcast quary for whole chain. --");
 			broadcast(new Message("REQ_ALL","REQ_ALL to replaceChain"));
 		}
@@ -230,6 +257,32 @@ public class Node {
 		return res;
 	}
 	
+	private boolean isInvalidChain(Chain receivedChain) {
+		System.err.format(">>> isInvalidChain()%n");
+		Boolean result;
+		if(!(receivedChain.getFirst().equals(genesisBlock))) {
+			result = true;
+		}else {
+			System.err.format(">>> isInvalidChain() 1%n");
+			Iterator<Block> it = receivedChain.iterator();
+			Block previousBlock = it.next();
+			Block currentBlock;
+			result = false;
+			while(it.hasNext()) {
+				System.err.format(">>> isInvalidChain() 2%n");
+				currentBlock = it.next();
+				System.err.format(">>> isInvalidChain() 2.5 cur:%s prev:%s%n",currentBlock.getIndex(), previousBlock.getIndex());
+				if(!currentBlock.isValidBlock(previousBlock)) {
+					System.err.format(">>> isInvalidChain() 3%n");
+					result = true;
+				}
+				System.err.format(">>> isInvalidChain() 4%n");
+				previousBlock = currentBlock;
+			}
+		}
+		System.err.format(">>> isInvalidChain() 5%n");
+		return result;
+	}
 
 
 	
@@ -269,7 +322,7 @@ public class Node {
 		return sb.toString();
 	}
 	
-	public void setPeers(List<WebTarget> peers) {
+	public void setPeers(Set<WebTarget> peers) {
 		this.peers = peers;
 	}
 	public String getUrl() {
@@ -286,8 +339,8 @@ public class Node {
 	}
 
 	public Node() {
-		chain = new Chain();
-		peers = new LinkedList<WebTarget>();
+		initializeChain();
+		peers = new HashSet<WebTarget>();
 		httpClient = ClientBuilder.newClient();
 		memo = "alo";
 		mapper = new ObjectMapper();

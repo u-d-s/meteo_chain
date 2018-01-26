@@ -59,7 +59,7 @@ public class EndPoints {
 	@POST
 	@Path("peers")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postPeers(@FormParam("URL") String url) {
+	public String postPeers(@FormParam("URL") String url) throws IOException {
 		node.addPeer(url);
 		return "add: " + url;
 	}
@@ -120,10 +120,26 @@ public class EndPoints {
 	@POST
 	@Path("blockToBeMined")
 	@Produces(MediaType.TEXT_PLAIN)
-	public String postBlockToBeMined(@FormParam("data") String data) {
+	public String postBlockToBeMined(@FormParam("data") String data) throws IOException {
 		node.addNewBlock(data);	
+		node.broadcastLatestBlock();
 		return "blockToBeMined " + data;
 	}
-
+	
+	@POST
+	@Path("initialize")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postInitialize(@FormParam("field") String field){
+		String result = "initialize field:" + field;
+		
+		switch (field) {
+		case "chain":
+			node.initializeChain();
+			break;
+		default:
+			result += " --> i don't have this filed.";
+		}
+		return result;
+	}
 
 }

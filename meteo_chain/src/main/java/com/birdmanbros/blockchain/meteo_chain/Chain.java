@@ -13,30 +13,36 @@ public class Chain extends LinkedList<Block>{
 		return super.size() <= chain.size() ? true : false;
 	}
 	
-	public boolean isInvalidChain() {
-		Boolean result;
-		if(!(super.getFirst().equals(new Chain().getFirst()))) {
-			result = true;
-		}else {
-			Iterator<Block> it = this.iterator();
-			Block previousBlock = it.next();
-			Block currentBlock;
-			result = false;
-			while(it.hasNext()) {
-				currentBlock = it.next();
-				if(!currentBlock.isValidBlock(previousBlock)) {
-					result = true;
-				}
-				previousBlock = currentBlock;
-			}
-		}
-		
-		return result;
-	}
+//	public boolean isInvalidChain() {
+//		System.err.format(">>> isInvalidChain()%n");
+//		Boolean result;
+//		if(!(super.getFirst().equals(new Chain().getFirst()))) {
+//			result = true;
+//		}else {
+//			System.err.format(">>> isInvalidChain() 1%n");
+//			Iterator<Block> it = this.iterator();
+//			Block previousBlock = it.next();
+//			Block currentBlock;
+//			result = false;
+//			while(it.hasNext()) {
+//				System.err.format(">>> isInvalidChain() 2.1%n");
+//				currentBlock = it.next();
+////				System.err.format(">>> isInvalidChain() 2.5 cur:%s prev:%s%n",currentBlock.getIndex(), previousBlock.getIndex());
+//				if(!currentBlock.isValidBlock(previousBlock)) {
+//					System.err.format(">>> isInvalidChain() 3%n");
+//					result = true;
+//				}
+//				System.err.format(">>> isInvalidChain() 4%n");
+//				previousBlock = currentBlock;
+//			}
+//		}
+//		System.err.format(">>> isInvalidChain() 5%n");
+//		return result;
+//	}
 	
-	public Chain addNewBlock(String data) {
+	public Chain addNewBlock(String data,int difficulty) {
 //		System.err.println("chain: addNewBlock");
-		addNewBlock(getLatestBlock().generateNextBlock(data));
+		addNewBlock(getLatestBlock().generateNextBlock(data,difficulty));
 		return this;
 	}
 	
@@ -51,27 +57,26 @@ public class Chain extends LinkedList<Block>{
 	
 
 	
-	public Chain(Long index, String previousHash, String timestamp, String data) {
-		super();
-//		chain = new LinkedList<Block>();
-		super.add(new Block(index, previousHash, timestamp, data));
-	}
-	
+//	public Chain(Long index, String previousHash, String timestamp, String data) {
+//		super();
+////		chain = new LinkedList<Block>();
+//		super.add(new Block(index, previousHash, timestamp, data));
+//	}
 	public Chain() {
-		// genesis block
-		this(0L,"-1", "20171218", "alphaandomega");
-		System.err.println("chain()");
-		
+		;
 	}
-	
-	@JsonCreator
-	private Chain(@JsonProperty("index") Long index, @JsonProperty("previousHash") String previousHash,
-			@JsonProperty("timestamp") String timestamp, @JsonProperty("data") String data,
-			@JsonProperty("hash") String hash) {
-		super();
-		super.add(new Block(index, previousHash, timestamp, data, hash));
-		System.err.println("jsoncreator");
+	public Chain(Block block) {
+		this();
+		super.add(block);
 	}
+//	@JsonCreator
+//	private Chain(@JsonProperty("index") Long index, @JsonProperty("previousHash") String previousHash,
+//			@JsonProperty("timestamp") String timestamp, @JsonProperty("data") String data,
+//			@JsonProperty("hash") String hash) {
+//		super();
+//		super.add(new Block(index, previousHash, timestamp, data, hash));
+//		System.err.println("jsoncreator");
+//	}
 	
 }
 
